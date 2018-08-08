@@ -1,0 +1,42 @@
+<!--the below if statement checks the database for categories for the page if none are found it is set to defualt "Products"-->
+
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if category %}{{ category.name }}{% else %}Products{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div id="sidebar">
+        <h3>Categories</h3>
+        <ul>
+            <li {% if not category %}class="selected"{% endif %}>
+                <a href="{% url "shop:product_list" %}">All</a>
+            </li>
+            <!--taking the slug (created in the admin menu) to create the url-->
+            {% for c in categories %}
+                <li {% if category.slug == c.slug %}class="selected"{% endif %}>
+                    <a href= "{{c.get_absolute_url}}" >{{ c.name }}</a>
+                </li>
+            {% endfor %}
+            <!--adding a way to the admin screen-->
+            <li>
+                <a href="admin/">Admin</a>
+            </li>
+        </ul>
+    </div>
+    <div id="main" class="product-list">
+        <h1>{% if category %}{{ category.name }}{% else %}Products{% endif %}</h1>
+        <!--finding for every product slug finds it's matching image along with it's url-->
+        {% for product in products %}
+            <div class="item">
+                <a href="{{ product.get_absolute_url }}">
+                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+                </a>
+                <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
+                ${{ product.price }}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
